@@ -1,24 +1,33 @@
 #to calculate what bucket(s) a new user goes into
-def calculate_bucket(): #pass in the user
-    pass
-    #user_score = 0
-    #for all buckets:
-        #if user.hobbies == bucket.hobbies:
-            #user_score += 3
-        #if user.music == bucket.hobbies:
-            #user_score += 3
-        #if user.education == bucket.education:
-            #user_score += 2
-        #if user.politics == bucket.education:
-            #user_score += 2
-        #if user.languages == bucket.education:
-            #user_score += 1
-        #if user.religion == bucket.religion:
-            #user_score += 1
+from flask import current_app
 
 
-        #if confirm_match():
-            #write new line of table that links user to a bucket
+def calculate_bucket(): #pass in the user?
+    db = current_app.db
+    bucket_table = db["bucket"] #inside "" put name of bucket table
+    user_score = 0
+    user = "" #how am I getting user info?????
+    for bucket in bucket_table.find():
+        if user["hobbies"] == bucket["hobbies"]:
+            user_score += 3
+        if user["music"] == bucket["music"]:
+            user_score += 3
+        if user["education"] == bucket["education"]:
+            user_score += 2
+        if user["politics"] == bucket["politics"]:
+            user_score += 2
+        if user["languages"] == bucket["languages"]:
+            user_score += 1
+        if user["religion"] == bucket["religion"]:
+            user_score += 1
+
+        if confirm_match():
+            dict = {
+                "username": user["username"], #make sure field name matched actually
+                "bucket_id": bucket["_id"] #make sure field name matched actually
+            }
+            bucket_user_table = db["bucket_users"] #inside "" put name of bucket user link table
+            bucket_user_table.insert_one(dict) #writes new line of table that links user to a bucket
 
 #to confirm whether a score is high enough to form a match
 def confirm_match(score):
@@ -30,6 +39,10 @@ def confirm_match(score):
 #to create a group of four matching people
 def match_group(): #maybe pass what bucket you want to match in
     pass
+    #db = current_app.db
+    #non-negotiable_table = mydb[""] #inside "" put name of group table
+    #group_table = mydb[""] #inside "" put name of group table
+
     #group_list = []
     #finished = False
 
@@ -49,4 +62,4 @@ def match_group(): #maybe pass what bucket you want to match in
         #if len(group_list) == 4:
             #finished = True
 
-    #write group to the database (table of groups)
+    #group_table.insert_one(db) #write group to the database (table of groups)
