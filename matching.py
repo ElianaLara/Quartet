@@ -26,3 +26,26 @@ def confirm_match(score):
         return True
     else:
         return False
+
+def match_group(): #maybe pass what bucket you want to match in
+    pass
+    #group_list = []
+    #finished = False
+
+    #user = pick a random user from the bucket
+    #group_list.append(user)
+
+    #while not finished:
+        #add_to_group = True
+        #temp_user = pick a random user who is in the bucket specified
+
+        #for user in group_list:
+            #if temp_user has a characteristic that is in user non negotiables table:
+                # add_to_group = False
+        #if add_to_group:
+            #group_list.append(temp_user)
+
+        #if len(group_list) == 4:
+            #finished = True
+
+    #write group to the database (table of groups)
