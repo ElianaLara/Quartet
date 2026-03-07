@@ -21,7 +21,7 @@ def calculate_bucket(): #pass in the user?
         if user["religion"] == bucket["religion"]:
             user_score += 1
 
-        if confirm_match():
+        if confirm_match(user_score):
             dict = {
                 "username": user["username"], #make sure field name matched actually
                 "bucket_id": bucket["_id"] #make sure field name matched actually
