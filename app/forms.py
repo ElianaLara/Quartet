@@ -7,3 +7,13 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
 
     submit = SubmitField("Go to Dashboard")
+
+
+class RegisterForm(FlaskForm):
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    phone = StringField('Phone', validators=[DataRequired()])
+    age = IntegerField('Age', validators=[DataRequired()])
+    gender = StringField('gender', validators=[DataRequired()])
+
+    register = SubmitField("Register")
