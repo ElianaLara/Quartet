@@ -1,6 +1,5 @@
 from flask import render_template, redirect, url_for, session, Blueprint, flash, request, current_app
 from .forms import LoginForm, RegisterForm
-from . import db
 
 main = Blueprint("main", __name__)
 
@@ -14,12 +13,13 @@ def dashboard():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        # check if email already exists
+        db = current_app.db  # safe reference to database
+
+        # check if email exists
         if db.users.find_one({"email": form.email.data}):
             flash("Email already registered.", "error")
             return redirect(url_for("main.register"))
 
-        # store user
         user_data = {
             "email": form.email.data,
             "password": form.password.data,
@@ -27,7 +27,11 @@ def register():
             "age": form.age.data,
             "gender": form.gender.data
         }
-        db.users.insert_one(user_data)
+
+        result = db.users.insert_one(user_data)
+        print("Inserted ID:", result.inserted_id)  # debug
+
+
         flash("Registration successful!", "success")
         return redirect(url_for("main.register"))
 

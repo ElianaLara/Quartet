@@ -1,26 +1,19 @@
 from flask import Flask
-from config import Config
 from pymongo import MongoClient
+from config import Config
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-# Global variable for db access
-db = None
-
 def create_app():
-    global db
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    print(os.environ.get("MONGO_URI"))
-    print(os.environ.get("SECRET_KEY"))
-    # Connect to MongoDB Atlas
+    # Connect MongoDB
     client = MongoClient(app.config['MONGO_URI'])
-    db = client.get_database("mydatabase")  # Uses the database in your URI
+    app.db = client["mydatabase"]  # attach db to app object
 
-    # Register Blueprints
     from .routes import main
     app.register_blueprint(main)
 
