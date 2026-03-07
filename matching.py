@@ -6,7 +6,7 @@ def calculate_bucket(): #pass in the user?
     db = current_app.db
     bucket_table = db["bucket"] #inside "" put name of bucket table
     user_score = 0
-    user = "" #how am I getting user info?????
+    user = "" #how am I getting user info?????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! as soon as user entered to database call this maybe?
     for bucket in bucket_table.find():
         if user["hobbies"] == bucket["hobbies"]:
             user_score += 3
@@ -38,10 +38,9 @@ def confirm_match(score):
 
 #to create a group of four matching people
 def match_group(): #maybe pass what bucket you want to match in
-    pass
-    #db = current_app.db
-    #non-negotiable_table = mydb[""] #inside "" put name of group table
-    #group_table = mydb[""] #inside "" put name of group table
+    db = current_app.db
+    non_negotiable_table = db["non_negotiable"] #inside "" put name of group table
+    group_table = db["group"] #inside "" put name of group table
 
     #group_list = []
     #finished = False
@@ -62,4 +61,4 @@ def match_group(): #maybe pass what bucket you want to match in
         #if len(group_list) == 4:
             #finished = True
 
-    #group_table.insert_one(db) #write group to the database (table of groups)
+    #group_table.insert_one(db) #write group to the database (table of groups) #mightb need it in a for loop
