@@ -126,13 +126,17 @@
     <div class="button-icon" title="Messages">
       <img src="{{ url_for('static', filename='images/message.png') }}" alt="Messages" style="width:60px;height:60px;">
     </div>
-    <img
-      src="{{ url_for('static', filename='images/profile.png') }}"
-      alt="Profile"
-      class="profile-pic"
-    >
+    <a href="{{ url_for('main.profile') }}">
+      <img
+          src="{{ url_for('static', filename='images/profile.png') }}"
+          alt="Profile"
+          class="profile-pic"
+      >
+    </a>
   </div>
+  <a href="{{ url_for('main.logout') }}" class="login-link">Logout→</a>
 </div>
+
 
 </body>
 </html>
