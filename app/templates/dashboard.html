@@ -124,13 +124,21 @@
   <div class="actions">
     <div class="button-icon" title="Add">+</div>
     <div class="button-icon" title="Messages">
-      <img src="{{ url_for('static', filename='images/message.png') }}" alt="Messages" style="width:60px;height:60px;">
+      <a href="{{ url_for('main.chat') }}">
+      <img src="{{ url_for('static', filename='images/message.png') }}"
+           alt="Messages"
+           style="width:60px; height:60px;">
+    </a>
     </div>
+    <a href="{{ url_for('main.profile') }}">
     <img
-      src="{{ url_for('static', filename='images/profile.png') }}"
-      alt="Profile"
-      class="profile-pic"
+        src="{{ url_for('static', filename='images/profile.png') }}"
+        alt="Profile"
+        class="profile-pic"
     >
+</a>
+
+    <a href="{{ url_for('main.logout') }}" className="button"> Log out←
   </div>
 </div>
 
