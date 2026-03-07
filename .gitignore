@@ -3,5 +3,5 @@
 /instance
 /edit
 /__pycache__
-/app/static/uploads
+/app/static/images
 /.env
