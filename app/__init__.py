@@ -24,6 +24,5 @@ def create_app():
     # Register Blueprints
     from .routes import main
     app.register_blueprint(main)
-    app.config.from_object(Config)
 
     return app
