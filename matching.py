@@ -27,6 +27,7 @@ def confirm_match(score):
     else:
         return False
 
+#to create a group of four matching people
 def match_group(): #maybe pass what bucket you want to match in
     pass
     #group_list = []
