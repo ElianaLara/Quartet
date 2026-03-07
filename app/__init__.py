@@ -6,15 +6,21 @@ import os
 
 load_dotenv()
 
+# Global variable for db access
+db = None
+
 def create_app():
+    global db
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    print(os.environ.get("MONGO_URI"))
+    print(os.environ.get("SECRET_KEY"))
+    # Connect to MongoDB Atlas
     client = MongoClient(app.config['MONGO_URI'])
+    db = client.get_database("mydatabase")  # Uses the database in your URI
 
-    # store db inside app
-    app.db = client.get_database("mydatabase")
-
+    # Register Blueprints
     from .routes import main
     app.register_blueprint(main)
 
