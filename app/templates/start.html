@@ -1,1 +1,49 @@
-hi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quartet</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+      <img
+    src="{{ url_for('static', filename='images/logo.png') }}"
+    alt="Quizlet Logo"
+    class="logo"
+    >
+    <p class="subtitle">Welcome please log in or register to continue</p>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash-message">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+
+      <label>Email</label>
+        {{ form.email(class="form-control", placeholder="Enter your restaurant email") }}
+
+      <label>Password</label>
+        {{ form.password(class="form-control", placeholder="Password") }}
+
+        {{ form.submit(class="button") }}
+        <p>email="admin@resto.com", password="1234"</p>
+    </form>
+    <div class="divider"></div>
+  </div>
+</div>
+
+</body>
+</html>
+
+</html>
