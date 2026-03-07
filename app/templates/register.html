@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <img
+    src="{{ url_for('static', filename='images/logo.png') }}"
+    alt="Quizlet Logo"
+    class="logo"
+    >
+      <h1>Register</h1>
+      <p class="subtitle">Create your account</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <label for="email">Email</label>
+        {{ form.email(class="input") }}
+
+        <label for="password">Password</label>
+        {{ form.password(class="input") }}
+
+        <label for="phone">Phone</label>
+        {{ form.phone(class="input") }}
+
+        <label for="age">Age</label>
+        {{ form.age(class="input") }}
+
+        <label for="gender">Gender</label>
+        {{ form.gender(class="input") }}
+
+         <label for="location">Location</label>
+        {{ form.location(class="input") }}
+
+        {{ form.register(class="button") }}
+      </form>
+
+      <a href="{{ url_for('main.login') }}" class="login-link">Log in →</a>
+    </div>
+
+  </div>
+</body>
+</html>
