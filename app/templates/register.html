@@ -43,9 +43,15 @@
         <label for="gender">Gender</label>
         {{ form.gender(class="input") }}
 
+         <label for="location">Location</label>
+        {{ form.location(class="input") }}
+
         {{ form.register(class="button") }}
       </form>
+
+      <a href="{{ url_for('main.login') }}" class="login-link">Log in →</a>
     </div>
+
   </div>
 </body>
 </html>
