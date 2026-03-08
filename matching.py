@@ -1,7 +1,6 @@
 #to calculate what bucket(s) a new user goes into
 from flask import current_app
 
-
 def calculate_bucket(): #pass in the user?
     db = current_app.db
     bucket_table = db["bucket"] #inside "" put name of bucket table
@@ -70,3 +69,34 @@ def match_group(user): #maybe pass what bucket you want to match in when a user 
             finished = True
 
     #group_table.insert_one(db) #write group to the database (table of groups) #mightb need it in a for loop
+
+def jenna_to_document(jenna_str):
+    doc = {}
+    parts = jenna_str.split(",")
+
+    for part in parts:
+        topic, choice = part.lstrip("+").split(":")
+    if topic in doc:
+        doc[topic].append(choice)
+    else:
+        doc[topic] = [choice]
+
+    return doc
+
+
+
+
+def calculate_match_score(user_one, user_two):
+    user_score = 0
+    if user_one["hobbies"] == user_two["hobbies"]:
+        user_score += 3
+    if user_one["music"] == user_two["music"]:
+        user_score += 3
+    if user_one["education"] == user_two["education"]:
+        user_score += 2
+    if user_one["politics"] == user_two["politics"]:
+        user_score += 2
+    if user_one["languages"] == user_two["languages"]:
+        user_score += 1
+    if user_one["religion"] == user_two["religion"]:
+        user_score += 1
