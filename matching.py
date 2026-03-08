@@ -84,7 +84,6 @@ def jenna_to_document(jenna_str):
     return doc
 
 
-
 def calculate_match_score(user_one, user_two):
     user_score = 0
     if user_one["hobbies"] == user_two["hobbies"]:
