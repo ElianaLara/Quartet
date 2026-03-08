@@ -1,5 +1,6 @@
 #to calculate what bucket(s) a new user goes into
 from flask import current_app
+import pymongo
 
 def calculate_bucket(): #pass in the user?
     db = current_app.db
@@ -84,17 +85,37 @@ def jenna_to_document(jenna_str):
     return doc
 
 
-def calculate_match_score(user_one, user_two):
+#arguments it needs are the keyword strings for both users and both user IDs
+#I have called it ID throughout this but the field from the database is user_name
+def calculate_match_score(data_str_one, data_str_two, ID_1, ID_2):
+    dict_user_one = make_keywords_dictionary(data_str_one)
+    dict_user_two = make_keywords_dictionary(data_str_two)
     user_score = 0
-    if user_one["hobbies"] == user_two["hobbies"]:
-        user_score += 3
-    if user_one["music"] == user_two["music"]:
-        user_score += 3
-    if user_one["education"] == user_two["education"]:
-        user_score += 2
-    if user_one["politics"] == user_two["politics"]:
-        user_score += 2
-    if user_one["languages"] == user_two["languages"]:
-        user_score += 1
-    if user_one["religion"] == user_two["religion"]:
-        user_score += 1
+
+    weights = {
+        "hobbies": 3,
+        "music": 3,
+        "education": 2,
+        "politics": 2,
+        "languages": 1,
+        "religion": 1
+    }
+
+    for key in dict_user_one.keys() & dict_user_two.keys():
+        list_one = dict_user_one[key]
+        list_two = dict_user_two[key]
+        if set(list_one) & set(list_two): #if they share values
+            user_score += weights.get(key, 0)
+    return (ID_1, ID_2, user_score)
+
+
+def make_keywords_dictionary(data_str):
+    result = {}
+    parts = data_str.split(",")
+    for part in parts:
+        key, value = part.split(":")
+        if key in result:
+            result[key].append(value)
+        else:
+            result[key] = [value]
+    return result
