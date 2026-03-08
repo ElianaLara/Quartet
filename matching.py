@@ -125,19 +125,6 @@ def make_keywords_dictionary(data_str):
 
 from flask import current_app
 
-
-def get_user_keywords(user_id):
-    db = current_app.db
-    messages = db.messages.find({"_id": user_id})
-
-    keywords_list = []
-    for msg in messages:
-        kw = msg.get("keywords")
-        if kw:
-            keywords_list.append(kw)
-
-    return keywords_list
-
 def random_user():
     db = current_app.db
     result = list(db.users.aggregate([{"$sample": {"size": 1}}]))
@@ -162,22 +149,38 @@ def search():
         {"$set": {"buddies": buddy_dict}}
     )
 
-def findBest(otherUser):
+def get_user_keywords(user_id):
+    db = current_app.db
+    user = db.users.find_one({"_id": user_id})
+    if not user:
+        return []
+    messages = db.messages.find({"user_name": user.get("name")})
+    return [msg["keywords"] for msg in messages if msg.get("keywords")]
+
+
+def findBest(other_id):
+    db = current_app.db
     my_id = get_id_from_email(session.get("user_email"))
-    my_keywords = get_user_keywords(session.get(my_id))
-    other_keywords = get_user_keywords(otherUser)
+    my_keywords = get_user_keywords(my_id)
 
-    buddies = len(otherUser.get("buddies", {}).keys())
-    print(buddies)
-    best = 0
-    best_id = None
+    # fetch full document so we can access buddies
+    other_user = db.users.find_one({"_id": other_id})
+    if not other_user:
+        return other_id
 
-    for i in range(buddies):
-        result = calculate_match_score(my_keywords, other_keywords, my_id, otherUser.get("buddies", {}).get(str(i)))
-        if result[2] > best:
-            best = result[2]
-            best_id = result[1]
-    return best_id
+    other_keywords = get_user_keywords(other_id)
+    _, __, best_score = calculate_match_score(my_keywords, other_keywords, my_id, other_id)
+    best_id = other_id
+
+    # check each of otherUser's buddies
+    for key, buddy_id in other_user.get("buddies", {}).items():
+        buddy_keywords = get_user_keywords(buddy_id)
+        _, __, score = calculate_match_score(my_keywords, buddy_keywords, my_id, buddy_id)
+        if score > best_score:
+            best_score = score
+            best_id = buddy_id
+
+    return best_id  # returns the ID of whoever scored highest
 
 def get_id_from_email(email):
     db = current_app.db
