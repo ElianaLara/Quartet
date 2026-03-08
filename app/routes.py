@@ -589,7 +589,7 @@ def find_group():
             "keyword_list": parse_keyword_list(other_keywords)
         })
 
-    return render_template("group.html", members=member_data)
+    return render_template("group.html", members=member_data, group_id=group_id)
 
 # background worker — no route decorator
 def run_search_for_all_users_worker(app):
@@ -690,3 +690,63 @@ def run_search_all():
     thread = Thread(target=run_search_for_all_users_worker, args=(app,))
     thread.start()
     return "Search started in background — check your terminal for progress."
+
+
+@main.route("/place/<group_id>")
+def place(group_id):
+        # group_id is now a string representing ObjectId
+        db = current_app.db
+        from bson import ObjectId
+        try:
+            oid = ObjectId(group_id)
+        except Exception:
+            return "Invalid group ID", 400
+
+        # query your MongoDB collection
+        group_places = list(db.places.find({"group_id": oid}))
+
+        if group_places:
+            selected_place = random.choice(group_places)["name"]
+        else:
+            default_places = [
+                "Cafe", "Park", "Restaurant", "Pub", "Library",
+                "Co-working Space", "Hotel Lobby", "Shopping Mall",
+                "Costa Coffee", "University Campus"
+            ]
+            selected_place = random.choice(default_places)
+            # optionally insert new place
+            db.places.insert_one({"name": selected_place, "group_id": oid})
+
+        meeting_info = {
+            "place": selected_place,
+            "time": "🕒 3:30 PM, March 10, 2026"
+        }
+
+        return render_template("meeting.html", meeting=meeting_info)
+
+
+@main.route("/debug-score")
+def debug_score():
+    db = current_app.db
+    user_email = session.get("user_email")
+    my_id = get_id_from_email(user_email)
+
+    # check what messages exist for this user
+    by_email = list(db.messages.find({"user_email": user_email}))
+    by_name = list(db.messages.find({"user_name": session.get("user_name")}))
+
+    my_keywords = ",".join(get_user_keywords(my_id))
+
+    # grab one other user and score them
+    other = db.users.find_one({"email": {"$ne": user_email}})
+    other_keywords = ",".join(get_user_keywords(other["_id"])) if other else ""
+    _, __, score = calculate_match_score(my_keywords, other_keywords, my_id, other["_id"]) if other else (None, None,
+                                                                                                          None)
+
+    return {
+        "messages_by_email": len(by_email),
+        "messages_by_name": len(by_name),
+        "my_keywords": my_keywords,
+        "other_keywords": other_keywords,
+        "score": score
+    }

@@ -93,7 +93,7 @@ def calculate_match_score(data_str_one, data_str_two, ID_1, ID_2):
     user_score = 0
 
     weights = {
-        "hobbies": 3,
+        "hobby": 3,
         "music": 3,
         "education": 2,
         "politics": 2,
@@ -157,8 +157,15 @@ def get_user_keywords(user_id):
     user = db.users.find_one({"_id": user_id})
     if not user:
         return []
-    messages = db.messages.find({"user_email": user.get("email")})  # was user_name
-    return [msg["keywords"] for msg in messages if msg.get("keywords")]
+    messages = db.messages.find({"user_email": user.get("email")})
+    keywords = []
+    for msg in messages:
+        kw = msg.get("keywords")
+        if kw and str(kw).strip() != "0":  # skip zero returns
+            # also strip newlines that textwrap.fill introduces
+            cleaned = str(kw).replace("\n", ",").strip()
+            keywords.append(cleaned)
+    return keywords
 
 
 def findBest(other_id):
