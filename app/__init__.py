@@ -11,10 +11,10 @@ def create_app():
     app.config.from_object(Config)
 
     # Connect MongoDB
+    from .routes import main
     client = MongoClient(app.config['MONGO_URI'])
     app.db = client["mydatabase"]  # attach db to app object
 
-    from .routes import main
     app.register_blueprint(main)
 
     return app

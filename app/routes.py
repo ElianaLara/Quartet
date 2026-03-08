@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, session, Blueprint, flash, request, current_app
 from .forms import LoginForm, RegisterForm, ProfileForm
+from Chatbot import intro, send_answer, extract_keywords
 
 main = Blueprint("main", __name__)
 
@@ -127,6 +128,11 @@ def chat():
         flash("Please log in first.", "error")
         return redirect(url_for("main.login"))
 
+    chat_messages.append({
+        "sender": session.get("Jenna"),
+        "text": intro()
+    })
+
     # Serve the chat HTML page
     return render_template("chat.html")
 
@@ -141,6 +147,16 @@ def send_message():
     chat_messages.append({
         "sender": session.get("user_email", "You"),
         "text": text
+    })
+
+    chat_messages.append({
+        "sender": session.get("Jenna"),
+        "text": send_answer(text)
+    })
+
+    chat_messages.append({
+        "sender": session.get("Extracted"),
+        "text": extract_keywords(text)
     })
 
     return {"status": "success"}
