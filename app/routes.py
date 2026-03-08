@@ -304,77 +304,32 @@ def add_fake_users():
 
     keyword_pools = {
         "hobbies": [
-            "hiking", "gaming", "cooking", "reading", "cycling", "swimming",
-            "photography", "painting", "gardening", "travelling", "yoga",
-            "climbing", "football", "tennis", "running", "surfing", "skateboarding",
-            "fishing", "knitting", "dancing", "boxing", "chess", "baking",
-            "pottery", "woodworking", "archery", "astronomy", "bird-watching",
-            "calligraphy", "candle-making", "caving", "cosplay", "crocheting",
-            "diy", "embroidery", "falconry", "foraging", "glassblowing",
-            "homebrewing", "horse-riding", "jewellery-making", "kayaking",
-            "leatherworking", "lego", "magic", "martial-arts", "meditation",
-            "metal-detecting", "model-trains", "origami", "paragliding",
-            "parkour", "pilates", "podcasting", "quilting", "rock-climbing",
-            "rowing", "sailing", "scrapbooking", "scuba-diving", "sewing",
-            "skiing", "skydiving", "snowboarding", "stand-up-comedy",
-            "stained-glass", "street-art", "table-tennis", "taxidermy",
-            "theatre", "trampolining", "video-editing", "volunteering",
-            "weightlifting", "wine-tasting", "writing", "zumba", "basketball",
-            "cricket", "rugby", "badminton", "golf", "fencing", "triathlon"
+            "sport", "outdoors", "fitness", "art", "music", "food", "travel",
+            "technology", "nature", "reading", "gaming", "cooking", "crafts",
+            "film", "photography", "dance", "theatre", "volunteering", "fashion",
+            "animals", "socialising", "nightlife", "wellness", "spirituality"
         ],
         "music": [
-            "rock", "pop", "jazz", "classical", "hiphop", "metal", "indie",
-            "rnb", "country", "electronic", "folk", "blues", "reggae", "punk",
-            "soul", "alternative", "techno", "disco", "ambient", "baroque",
-            "bossa-nova", "celtic", "choral", "dancehall", "drum-and-bass",
-            "dubstep", "flamenco", "funk", "garage", "gospel", "grunge",
-            "grime", "house", "k-pop", "latin", "lo-fi", "motown", "opera",
-            "orchestral", "post-rock", "psych-rock", "rap", "salsa", "ska",
-            "swing", "trance", "trip-hop", "world-music", "afrobeats",
-            "bluegrass", "bolero", "cumbia", "fado", "hardstyle", "merengue",
-            "neo-soul", "new-wave", "noise", "prog-rock", "shoegaze", "synth-pop"
+            "pop", "rock", "classical", "jazz", "electronic", "hiphop", "folk",
+            "rnb", "metal", "indie", "country", "dance", "world", "soul", "punk"
         ],
         "education": [
-            "engineering", "medicine", "law", "art", "science", "business",
-            "history", "psychology", "mathematics", "philosophy", "literature",
-            "economics", "architecture", "computing", "biology", "chemistry",
-            "physics", "geography", "sociology", "anthropology", "archaeology",
-            "astronomy", "biochemistry", "criminology", "dentistry", "design",
-            "drama", "education", "environmental-science", "finance", "genetics",
-            "geology", "graphic-design", "international-relations", "journalism",
-            "linguistics", "marketing", "mechanical-engineering", "microbiology",
-            "music", "neuroscience", "nursing", "nutrition", "optometry",
-            "pharmacy", "photography", "political-science", "public-health",
-            "robotics", "social-work", "software-engineering", "statistics",
-            "theology", "urban-planning", "veterinary", "zoology"
+            "arts", "science", "technology", "business", "humanities", "medicine",
+            "law", "engineering", "social-science", "education", "design",
+            "environment", "finance", "media", "computing"
         ],
         "politics": [
-            "left", "centre", "right", "green", "liberal", "conservative",
-            "socialist", "libertarian", "progressive", "moderate", "anarchist",
-            "centrist", "communist", "democrat", "environmentalist", "feminist",
-            "nationalist", "pacifist", "republican", "social-democrat",
-            "traditionalist", "utilitarian", "reformist", "populist"
+            "left", "centre-left", "centre", "centre-right", "right",
+            "green", "libertarian", "progressive", "conservative", "moderate"
         ],
         "languages": [
             "english", "spanish", "french", "german", "mandarin", "arabic",
             "portuguese", "italian", "japanese", "hindi", "russian", "korean",
-            "afrikaans", "albanian", "amharic", "armenian", "azerbaijani",
-            "basque", "bengali", "bosnian", "bulgarian", "catalan", "croatian",
-            "czech", "danish", "dutch", "estonian", "farsi", "finnish",
-            "georgian", "greek", "gujarati", "hausa", "hebrew", "hungarian",
-            "icelandic", "indonesian", "irish", "kannada", "kazakh", "latvian",
-            "lithuanian", "macedonian", "malay", "maltese", "marathi", "mongolian",
-            "nepali", "norwegian", "pashto", "polish", "punjabi", "romanian",
-            "serbian", "sinhalese", "slovak", "slovenian", "somali", "swahili",
-            "swedish", "tagalog", "tamil", "telugu", "thai", "turkish",
-            "ukrainian", "urdu", "uzbek", "vietnamese", "welsh", "yoruba", "zulu"
+            "dutch", "polish", "turkish", "swedish", "greek", "hebrew"
         ],
         "religion": [
             "christian", "muslim", "jewish", "hindu", "buddhist", "atheist",
-            "agnostic", "spiritual", "sikh", "secular", "bahai", "cao-dai",
-            "confucian", "druid", "gnostic", "jain", "pagan", "rastafari",
-            "shinto", "taoist", "unitarian", "wiccan", "zoroastrian",
-            "non-religious", "humanist", "animist", "indigenous-spirituality"
+            "agnostic", "spiritual", "sikh", "secular", "other-faith"
         ]
     }
 
@@ -541,7 +496,7 @@ def run_search_for_current_user():
 
     buddy_dict = {}
 
-    for j in range(3):
+    for j in range(20):
         best_user = random.choice(user_list)
         best_id_str = str(best_user["_id"])
 
@@ -550,7 +505,7 @@ def run_search_for_current_user():
             my_keywords, start_keywords, my_id, best_user["_id"]
         )
 
-        for k in range(4):
+        for k in range(15):
             current_user = other_users.get(best_id_str)
             if not current_user:
                 break
@@ -669,7 +624,7 @@ def run_search_for_all_users_worker(app):
 
                 buddy_dict = {}
 
-                for j in range(3):
+                for j in range(10):
                     candidates_pool = [u for u in user_list if str(u["_id"]) != my_id_str]
                     if not candidates_pool:
                         break
@@ -682,7 +637,7 @@ def run_search_for_all_users_worker(app):
                         my_keywords, start_keywords, my_id, best_user["_id"]
                     )
 
-                    for k in range(4):
+                    for k in range(10):
                         current_user = all_users.get(best_id_str)
                         if not current_user:
                             break
