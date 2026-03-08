@@ -59,6 +59,7 @@ def profile():
         phone=user.get("phone", ""),
         age=user.get("age", ""),
         gender=user.get("gender", ""),
+        location=user.get("location", ""),
         non_negotiables=user.get("non_negotiables", "")
     )
 
@@ -69,7 +70,8 @@ def profile():
             "phone": form.phone.data,
             "age": form.age.data,
             "gender": form.gender.data,
-            "non_negotiables": form.non_negotiables.data
+            "non_negotiables": form.non_negotiables.data,
+            "location": form.location.data
         }
 
         # Update password if provided
@@ -109,7 +111,8 @@ def register():
             "password": form.password.data,
             "phone": form.phone.data,
             "age": form.age.data,
-            "gender": form.gender.data
+            "gender": form.gender.data,
+            "location": form.location.data
         }
 
         result = db.users.insert_one(user_data)

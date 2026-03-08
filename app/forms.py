@@ -42,5 +42,6 @@ class ProfileForm(FlaskForm):
     phone = StringField("Phone", validators=[Optional(), Length(min=11, max=11, message="Phone number must be 11 digits (07)"), validate_phonenumber])
     age = IntegerField("Age", validators=[Optional(), NumberRange(min=18, message="Under 18s not allowed")])
     gender = SelectField("Gender", choices=[("Male", "Male"), ("Female", "Female"), ("Other", "Other")])
+    location = StringField("location", validators=[DataRequired()])
     non_negotiables = TextAreaField("Non-Negotiables / Black List", validators=[Optional(), Length(max=500), sanitise_blacklist])
     submit = SubmitField("Update Profile")
