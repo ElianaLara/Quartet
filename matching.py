@@ -36,8 +36,16 @@ def confirm_match(score):
     else:
         return False
 
+def pick_bucket(user):
+    pass
+
+    #list of buckets the user is part of
+    #randomly pick one from 0 to len list
+    #match_group(user)
+
+
 #to create a group of four matching people
-def match_group(): #maybe pass what bucket you want to match in
+def match_group(user): #maybe pass what bucket you want to match in when a user presses the button
     db = current_app.db
     non_negotiable_table = db["non_negotiable"] #inside "" put name of group table
     group_table = db["group"] #inside "" put name of group table
