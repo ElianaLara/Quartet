@@ -4,110 +4,24 @@
   <meta charset="UTF-8">
   <title>Dashboard</title>
   <style>
-    /* Reset + global */
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(#f7faff, #eefeff);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 400px;
-      background: white;
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    .logo {
-      width: 200px;
-      height: auto;
-      margin-bottom: 20px;
-    }
-
-    .flash-message {
-      background-color: #e0ccff;  /* pale purple */
-      color: #3d3795;             /* dark blue text */
-      padding: 12px 16px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      font-size: 0.95rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      text-align: left;
-    }
-
-    h1 {
-      margin: 0.5rem 0;
-    }
-
-    .subtitle {
-      color: #555;
-      margin-bottom: 2rem;
-    }
-
-    /* Actions column */
-    .actions {
-      display: flex;
-      flex-direction: column; /* stacked vertically */
-      align-items: center;
-      gap: 16px;  /* space between buttons */
-      width: 100%;
-      margin-top: 1rem;
-    }
-
-    .button-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #0076e2;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      font-size: 1.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: background-color 0.2s ease;
-    }
-
-    .button-icon:hover {
-      background-color: #005bb5;
-    }
-
-    .profile-pic {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { margin: 0; min-height: 100vh; background: linear-gradient(#f7faff, #eefeff); display: flex; justify-content: center; align-items: center; }
+    .container { display: flex; flex-direction: column; align-items: center; width: 400px; background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+    .logo { width: 200px; height: auto; margin-bottom: 20px; }
+    .flash-message { background-color: #e0ccff; color: #3d3795; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.95rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); width: 100%; text-align: left; }
+    h1 { margin: 0.5rem 0; }
+    .subtitle { color: #555; margin-bottom: 2rem; }
+    .actions { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; margin-top: 1rem; }
+    .button-icon { width: 50px; height: 50px; border-radius: 50%; background-color: #0076e2; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: background-color 0.2s ease; text-decoration: none; }
+    .button-icon:hover { background-color: #005bb5; }
+    .button-icon.loading { background-color: #aaa; pointer-events: none; }
+    .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
-
 <div class="container">
-  <!-- Logo -->
-  <img
-    src="{{ url_for('static', filename='images/logo.png') }}"
-    alt="Logo"
-    class="logo"
-  >
+  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
 
-  <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
@@ -116,31 +30,34 @@
     {% endif %}
   {% endwith %}
 
-  <!-- Welcome -->
   <h1>Welcome!</h1>
   <p class="subtitle">This is your dashboard.</p>
 
-  <!-- Actions column: Plus, Message, Profile -->
   <div class="actions">
-    <a class="button-icon" title="Add" href="{{ url_for('main.my_keywords') }}">+</a>
+
+    <!-- + button now triggers group formation -->
+    <a class="button-icon" id="groupBtn" title="Find my group" href="{{ url_for('main.find_group') }}">+</a>
+
     <div class="button-icon" title="Messages">
       <a href="{{ url_for('main.chat') }}">
-      <img src="{{ url_for('static', filename='images/message.png') }}"
-           alt="Messages"
-           style="width:60px; height:60px;">
-    </a>
+        <img src="{{ url_for('static', filename='images/message.png') }}" alt="Messages" style="width:60px; height:60px;">
+      </a>
     </div>
-    <a href="{{ url_for('main.profile') }}">
-    <img
-        src="{{ url_for('static', filename='images/profile.png') }}"
-        alt="Profile"
-        class="profile-pic"
-    >
-</a>
 
-    <a href="{{ url_for('main.logout') }}" className="button"> Log out←
+    <a href="{{ url_for('main.profile') }}">
+      <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile" class="profile-pic">
+    </a>
+
+    <a href="{{ url_for('main.logout') }}" class="button">Log out</a>
   </div>
 </div>
 
+<script>
+  // Show loading state while group is being formed
+  document.getElementById("groupBtn").addEventListener("click", function() {
+    this.textContent = "...";
+    this.classList.add("loading");
+  });
+</script>
 </body>
 </html>

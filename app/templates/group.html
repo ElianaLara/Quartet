@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Group</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { margin: 0; min-height: 100vh; background: linear-gradient(#f7faff, #eefeff); display: flex; justify-content: center; align-items: center; }
+    .container { width: 500px; background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #254465; margin-bottom: 1.5rem; }
+    .member-card { border: 1px solid #e0e0e0; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; background: #f9f9f9; }
+    .member-name { font-size: 1.1rem; font-weight: bold; color: #254465; margin-bottom: 0.25rem; }
+    .member-id { font-size: 0.75rem; color: #999; margin-bottom: 0.5rem; }
+    .member-traits { font-size: 0.9rem; color: #555; margin-bottom: 0.5rem; }
+    .match-score { display: inline-block; background: #0076e2; color: white; border-radius: 20px; padding: 4px 12px; font-size: 0.85rem; font-weight: bold; }
+    .keywords { font-size: 0.8rem; color: #777; margin-top: 0.5rem; word-break: break-word; }
+    .back-btn { display: block; text-align: center; margin-top: 1.5rem; padding: 12px; background: #0076e2; color: white; border-radius: 10px; text-decoration: none; font-size: 1rem; }
+    .back-btn:hover { background: #005bb5; }
+    .no-members { text-align: center; color: #888; padding: 2rem 0; }
+    .keyword-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.4rem; }
+    .tag { border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; }
+    .tag.hobbies { background: #e8f5e9; color: #2e7d32; }
+    .tag.music { background: #fce4ec; color: #c62828; }
+    .tag.education { background: #fff3e0; color: #e65100; }
+    .tag.politics { background: #f3e5f5; color: #6a1b9a; }
+    .tag.languages { background: #e0f7fa; color: #00695c; }
+    .tag.religion { background: #fff8e1; color: #f57f17; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Your Group 🎉</h1>
+
+  {% if members %}
+    {% for member in members %}
+    <div class="member-card">
+      <div class="member-name">{{ member.name }}</div>
+      <div class="member-id">ID: {{ member.id }}</div>
+      <div class="member-traits">
+        📍 {{ member.location }} &nbsp;|&nbsp;
+        🎂 {{ member.age }} &nbsp;|&nbsp;
+        ⚧ {{ member.gender }}
+      </div>
+        <div class="keywords-section">
+          <div class="keywords-title">🏷 Interests</div>
+          {% if member.keyword_list %}
+            <div class="keyword-tags">
+              {% for item in member.keyword_list %}
+                <span class="tag {{ item.category }}">{{ item.category }}: {{ item.value }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="no-keywords">No keywords yet</div>
+          {% endif %}
+        </div>
+      <span class="match-score">Match score: {{ member.score }}</span>
+      {% if member.keywords %}
+        <div class="keywords">🏷 {{ member.keywords }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="no-members">No matches found yet. Try chatting with Jenna more!</div>
+  {% endif %}
+
+  <a href="{{ url_for('main.dashboard') }}" class="back-btn">← Back to Dashboard</a>
+</div>
+</body>
+</html>

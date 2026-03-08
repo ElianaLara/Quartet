@@ -137,8 +137,8 @@ def random_user():
 
 def search():
     db = current_app.db
-    buddies = 3
-    steps = 4
+    buddies = 10
+    steps = 10
     buddy_dict = {}
     for i in range(buddies):
         bestUser = random_user()
@@ -172,6 +172,28 @@ def findBest(other_id):
 
     # if they have no buddies yet, just score them directly and return
     if not other_user.get("buddies"):
+        return other_id
+
+    other_keywords = ",".join(get_user_keywords(other_id))
+    _, __, best_score = calculate_match_score(my_keywords, other_keywords, my_id, other_id)
+    best_id = other_id
+
+    for key, buddy_id in other_user.get("buddies", {}).items():
+        buddy_keywords = ",".join(get_user_keywords(buddy_id))
+        _, __, score = calculate_match_score(my_keywords, buddy_keywords, my_id, buddy_id)
+        if score > best_score:
+            best_score = score
+            best_id = buddy_id
+
+    return best_id#
+
+def findBest_for_user(other_id, my_id):
+    """Same as findBest but takes my_id directly instead of reading from session."""
+    db = current_app.db
+    my_keywords = ",".join(get_user_keywords(my_id))
+
+    other_user = db.users.find_one({"_id": other_id})
+    if not other_user or not other_user.get("buddies"):
         return other_id
 
     other_keywords = ",".join(get_user_keywords(other_id))
