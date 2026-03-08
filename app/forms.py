@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, TextAreaField, SubmitField, IntegerField, EmailField, PasswordField, DateField, TimeField
+from wtforms import StringField, SelectField, TextAreaField, SubmitField, IntegerField, EmailField, PasswordField, DateField, TimeField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError, NumberRange
 import re
 
@@ -44,4 +44,22 @@ class ProfileForm(FlaskForm):
     gender = SelectField("Gender", choices=[("Male", "Male"), ("Female", "Female"), ("Other", "Other")])
     location = StringField("location", validators=[DataRequired()])
     non_negotiables = TextAreaField("Non-Negotiables / Black List", validators=[Optional(), Length(max=500), sanitise_blacklist])
+    availability = SelectMultipleField(
+        "Availability",
+        choices=[
+
+            ("wed_morning", "Wednesday Morning"),
+            ("wed_afternoon", "Wednesday Afternoon"),
+            ("wed_evening", "Wednesday Evening"),
+
+            ("sat_morning", "Saturday Morning"),
+            ("sat_afternoon", "Saturday Afternoon"),
+            ("sat_evening", "Saturday Evening"),
+
+            ("sun_morning", "Sunday Morning"),
+            ("sun_afternoon", "Sunday Afternoon"),
+            ("sun_evening", "Sunday Evening"),
+        ],
+        validators=[Optional()]
+    )
     submit = SubmitField("Update Profile")
