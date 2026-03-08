@@ -155,7 +155,6 @@ def send_message():
 
     # Store the message and keywords in the database
     message_record = {
-        "user_email": user_email,
         "user_name": user_name,
         "keywords": keywords
     }
