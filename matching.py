@@ -1,3 +1,4 @@
+from flask import current_app, session
 #arguments it needs are the keyword strings for both users and both user IDs
 #I have called it ID throughout this but the field from the database is user_name
 def calculate_match_score(data_str_one, data_str_two, ID_1, ID_2):
