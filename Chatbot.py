@@ -38,16 +38,6 @@ breakdown_ai = client.chats.create(
         )
 )
 
-# while(True):
-# #     answer = input()
-# #     response = chat.send_message(answer)
-# #     print(f"Jenna: {textwrap.fill(response.text, 150)}")
-# #     try:
-# #         filtered = breakdown_ai.send_message(answer)
-# #         print(f"Split: {textwrap.fill(filtered.text, 150)}")
-# #     except:
-# #         print("0")
-
 def intro():
     response = chat.send_message("Please introduce yourself and ask me a question!")
     return f"Jenna: {textwrap.fill(response.text, 150)}"
