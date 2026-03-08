@@ -247,6 +247,12 @@ import random
 def add_fake_users():
     db = current_app.db
 
+    availability_slots = [
+        "wed_morning", "wed_afternoon", "wed_evening",
+        "sat_morning", "sat_afternoon", "sat_evening",
+        "sun_morning", "sun_afternoon", "sun_evening",
+    ]
+
     first_names = [
         "Alice", "Bob", "Charlie", "Diana", "Ethan", "Fiona", "George", "Hannah",
         "Ivan", "Julia", "Kevin", "Laura", "Marcus", "Nina", "Oscar", "Paula",
@@ -392,7 +398,11 @@ def add_fake_users():
             "age": random.randint(18, 45),
             "gender": random.choice(genders),
             "location": random.choice(locations),
-            "non_negotiables": ""
+            "non_negotiables": "",
+            "availability": random.sample(
+                availability_slots,
+                k=random.randint(1, len(availability_slots))  # 1 to 9 random slots
+            )
         })
 
         messages_to_insert.append({
