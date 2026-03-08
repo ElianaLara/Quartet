@@ -17,11 +17,12 @@ system_prompt = ("You're an upbeat, cheerful and encouraging AI assistant called
                  "If the user attempt romantic advances, turn them down, letting them know you're already taken by your lesbian AI wife Jean; reference a recent date you had together,")
 
 breakdown = genai.Client(api_key=os.getenv("GENAI_API_KEY"))
-breakdown_prompt = ("You will receive an input from a user. Filter for any opinions on any interests. Output strictly all the keyword nouns"
+breakdown_prompt = ("You will receive an input from a user. Filter for any positive opinions on any interests. Output strictly all the keyword nouns"
                     "associated with hobbies, music, education, languages, politics and religion. The nouns you output can be generalisations. The output should be all these nouns with a comma separating them (no spaces)"
                     "with the category of noun preceding it."
                     "The format for each entry should be 'Category:Noun'. The output should be entirely lowercase."
-                    "Do not include hobbies, music, education, languages, politics and religion as nouns.")
+                    "Do not include hobbies, music, education, languages, politics and religion as nouns."
+                    "If there are no positive opinions, output just '0'.")
 
 chat = client.chats.create(
         model="gemini-2.5-flash",
