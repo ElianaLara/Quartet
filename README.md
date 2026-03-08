@@ -1,4 +1,4 @@
-`# Quartet
+# Quartet
 
 Quartet is a web application utilising Gemini AI to ask users questions. The AI picks out simmilar keywords for the algorithm sorts users into groups of four depending on their shared hobbies and traits, suggesting meet up time and location.
 
