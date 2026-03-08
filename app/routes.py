@@ -141,26 +141,30 @@ def chat():
 
 @main.route("/send_message", methods=["POST"])
 def send_message():
+    db = current_app.db
     data = request.json
     text = data.get("message", "").strip()
     if not text:
         return {"status": "error", "message": "Empty message"}, 400
 
+    user_email = session.get("user_email", "Anonymous")
+    user_name = session.get("user_name", "You")
+
+    # Extract keywords from message
+    keywords = extract_keywords(text)
+
+    # Store the message and keywords in the database
+    message_record = {
+        "user_email": user_email,
+        "user_name": user_name,
+        "keywords": keywords
+    }
+    db.messages.insert_one(message_record)
+
     # Store message from browser user
-    chat_messages.append({
-        "sender": session.get("user_email", "You"),
-        "text": text
-    })
-
-    chat_messages.append({
-        "sender": session.get("Jenna"),
-        "text": send_answer(text)
-    })
-
-    chat_messages.append({
-        "sender": session.get("Extracted"),
-        "text": extract_keywords(text)
-    })
+    chat_messages.append({ "sender": session.get("user_email", "You"), "text": text })
+    chat_messages.append({ "sender": session.get("Jenna"), "text": send_answer(text) })
+    chat_messages.append({ "sender": session.get("Extracted"), "text": extract_keywords(text) })
 
     return {"status": "success"}
 
