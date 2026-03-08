@@ -41,29 +41,18 @@
         🎂 {{ member.age }} &nbsp;|&nbsp;
         ⚧ {{ member.gender }}
       </div>
-        <div class="keywords-section">
-          <div class="keywords-title">🏷 Interests</div>
-          {% if member.keyword_list %}
-            <div class="keyword-tags">
-              {% for item in member.keyword_list %}
-                <span class="tag {{ item.category }}">{{ item.category }}: {{ item.value }}</span>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="no-keywords">No keywords yet</div>
-          {% endif %}
-        </div>
       <span class="match-score">Match score: {{ member.score }}</span>
-      {% if member.keywords %}
-        <div class="keywords">🏷 {{ member.keywords }}</div>
-      {% endif %}
     </div>
     {% endfor %}
   {% else %}
     <div class="no-members">No matches found yet. Try chatting with Jenna more!</div>
   {% endif %}
 
-  <a href="{{ url_for('main.dashboard') }}" class="back-btn">← Back to Dashboard</a>
+  <a href="{{ url_for('main.place', group_id=group_id) }}" class="back-btn">
+    SEE WHERE ARE YOU GOING TO MEET OMG
+</a>
+
+  <a href="{{ url_for('main.dashboard') }}">← Back to Dashboard</a>
 </div>
 </body>
 </html>

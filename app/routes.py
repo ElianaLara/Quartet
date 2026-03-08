@@ -4,6 +4,7 @@ from group_formation import form_and_save_group, get_group_members
 from .forms import LoginForm, RegisterForm, ProfileForm
 from Chatbot import intro, send_answer, extract_keywords
 from matching import calculate_match_score, get_user_keywords, get_id_from_email, search, findBest_for_user
+import random
 
 main = Blueprint("main", __name__)
 
@@ -270,7 +271,7 @@ def find_group():
             "keyword_list": parse_keyword_list(other_keywords)
         })
 
-    return render_template("group.html", members=member_data)
+    return render_template("group.html", members=member_data, group_id=group_id)
 
 def parse_keyword_list(keyword_str):
     result = []
@@ -547,3 +548,35 @@ def run_search_all():
     thread = Thread(target=run_search_for_all_users, args=(app,))
     thread.start()
     return "Search started in background — check your terminal for progress."
+
+@main.route("/place/<group_id>")
+def place(group_id):
+        # group_id is now a string representing ObjectId
+        db = current_app.db
+        from bson import ObjectId
+        try:
+            oid = ObjectId(group_id)
+        except Exception:
+            return "Invalid group ID", 400
+
+        # query your MongoDB collection
+        group_places = list(db.places.find({"group_id": oid}))
+
+        if group_places:
+            selected_place = random.choice(group_places)["name"]
+        else:
+            default_places = [
+                "Cafe", "Park", "Restaurant", "Pub", "Library",
+                "Co-working Space", "Hotel Lobby", "Shopping Mall",
+                "Costa Coffee", "University Campus"
+            ]
+            selected_place = random.choice(default_places)
+            # optionally insert new place
+            db.places.insert_one({"name": selected_place, "group_id": oid})
+
+        meeting_info = {
+            "place": selected_place,
+            "time": "🕒 3:30 PM, March 10, 2026"
+        }
+
+        return render_template("meeting.html", meeting=meeting_info)
