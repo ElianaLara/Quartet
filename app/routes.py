@@ -287,26 +287,137 @@ import random
 def add_fake_users():
     db = current_app.db
 
-    first_names = ["Alice", "Bob", "Charlie", "Diana", "Ethan", "Fiona", "George", "Hannah"]
-    last_names = ["Smith", "Jones", "Williams", "Brown", "Taylor", "Davies", "Evans", "Wilson"]
-    locations = ["London", "Manchester", "Birmingham", "Leeds", "Glasgow", "Liverpool", "Bristol"]
+    first_names = [
+        "Alice", "Bob", "Charlie", "Diana", "Ethan", "Fiona", "George", "Hannah",
+        "Ivan", "Julia", "Kevin", "Laura", "Marcus", "Nina", "Oscar", "Paula",
+        "Quinn", "Rachel", "Sam", "Tara", "Uma", "Victor", "Wendy", "Xander",
+        "Yara", "Zoe", "Liam", "Mia", "Noah", "Ella", "James", "Sophia",
+        "Oliver", "Ava", "Elijah", "Isabella", "Lucas", "Mila", "Mason", "Aria",
+        "Logan", "Chloe", "Aiden", "Penelope", "Jackson", "Layla", "Sebastian",
+        "Riley", "Mateo", "Zoey", "Jack", "Nora", "Owen", "Lily", "Theodore",
+        "Eleanor", "Caleb", "Hannah", "Ryan", "Lillian", "Nathan", "Addison",
+        "Dylan", "Aubrey", "Aaron", "Ellie", "Connor", "Stella", "Evan", "Natalie",
+        "Ravi", "Priya", "Arjun", "Ananya", "Mohammed", "Fatima", "Omar", "Yasmin",
+        "Chen", "Wei", "Hiroshi", "Yuki", "Santiago", "Valentina", "Andrei", "Ioana",
+        "Kwame", "Amara", "Tariq", "Leila", "Dmitri", "Natasha", "Finn", "Aoife"
+    ]
+
+    last_names = [
+        "Smith", "Jones", "Williams", "Brown", "Taylor", "Davies", "Evans",
+        "Wilson", "Thomas", "Roberts", "Johnson", "Walker", "Wright", "Robinson",
+        "Thompson", "White", "Hughes", "Edwards", "Green", "Hall", "Lewis",
+        "Harris", "Clarke", "Patel", "Jackson", "Wood", "Turner", "Martin",
+        "Cooper", "Hill", "Ward", "Morris", "Moore", "Clark", "Lee", "King",
+        "Baker", "Harrison", "Morgan", "Allen", "James", "Scott", "Phillips",
+        "Watson", "Davis", "Parker", "Price", "Bennett", "Young", "Griffin",
+        "Murray", "Stone", "Reid", "Campbell", "Shaw", "Khan", "Singh", "Ali",
+        "Ahmed", "Hassan", "Rahman", "Chen", "Wang", "Zhang", "Liu", "Nguyen",
+        "Tran", "Garcia", "Martinez", "Rodriguez", "Lopez", "Gonzalez", "Perez",
+        "Kowalski", "Novak", "Fischer", "Weber", "Meyer", "Rossi", "Ferrari",
+        "Okafor", "Mensah", "Diallo", "Tremblay", "Dubois", "Leblanc", "Murphy"
+    ]
+
+    locations = [
+        "London", "Manchester", "Birmingham", "Leeds", "Glasgow", "Liverpool",
+        "Bristol", "Edinburgh", "Sheffield", "Newcastle", "Cardiff", "Nottingham",
+        "Leicester", "Brighton", "Oxford", "Cambridge", "York", "Bath",
+        "Southampton", "Portsmouth", "Reading", "Milton Keynes", "Coventry",
+        "Derby", "Wolverhampton", "Plymouth", "Exeter", "Norwich", "Ipswich",
+        "Dundee", "Aberdeen", "Inverness", "Swansea", "Belfast", "Derry",
+        "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia",
+        "San Antonio", "San Diego", "Dallas", "San Jose", "Austin", "Denver",
+        "Seattle", "Boston", "Nashville", "Portland", "Las Vegas", "Miami",
+        "Toronto", "Vancouver", "Montreal", "Sydney", "Melbourne", "Brisbane",
+        "Paris", "Berlin", "Madrid", "Rome", "Amsterdam", "Vienna", "Zurich",
+        "Dublin", "Lisbon", "Prague", "Warsaw", "Budapest", "Athens", "Stockholm",
+        "Copenhagen", "Oslo", "Helsinki", "Tokyo", "Seoul", "Singapore", "Mumbai",
+        "Delhi", "Bangalore", "Dubai", "Cape Town", "Nairobi", "Lagos", "Cairo"
+    ]
+
     genders = ["Male", "Female", "Other"]
 
     keyword_pools = {
-        "hobbies": ["hiking", "gaming", "cooking", "reading", "cycling", "swimming", "photography", "painting", "gardening", "travelling"],
-        "music": ["rock", "pop", "jazz", "classical", "hiphop", "metal", "indie", "rnb", "folk", "blues"],
-        "education": ["engineering", "medicine", "law", "art", "science", "business", "history", "psychology"],
-        "politics": ["left", "centre", "right", "green", "liberal", "conservative", "socialist"],
-        "languages": ["english", "spanish", "french", "german", "mandarin", "arabic", "italian"],
-        "religion": ["christian", "muslim", "jewish", "hindu", "buddhist", "atheist", "agnostic"]
+        "hobbies": [
+            "hiking", "gaming", "cooking", "reading", "cycling", "swimming",
+            "photography", "painting", "gardening", "travelling", "yoga",
+            "climbing", "football", "tennis", "running", "surfing", "skateboarding",
+            "fishing", "knitting", "dancing", "boxing", "chess", "baking",
+            "pottery", "woodworking", "archery", "astronomy", "bird-watching",
+            "calligraphy", "candle-making", "caving", "cosplay", "crocheting",
+            "diy", "embroidery", "falconry", "foraging", "glassblowing",
+            "homebrewing", "horse-riding", "jewellery-making", "kayaking",
+            "leatherworking", "lego", "magic", "martial-arts", "meditation",
+            "metal-detecting", "model-trains", "origami", "paragliding",
+            "parkour", "pilates", "podcasting", "quilting", "rock-climbing",
+            "rowing", "sailing", "scrapbooking", "scuba-diving", "sewing",
+            "skiing", "skydiving", "snowboarding", "stand-up-comedy",
+            "stained-glass", "street-art", "table-tennis", "taxidermy",
+            "theatre", "trampolining", "video-editing", "volunteering",
+            "weightlifting", "wine-tasting", "writing", "zumba", "basketball",
+            "cricket", "rugby", "badminton", "golf", "fencing", "triathlon"
+        ],
+        "music": [
+            "rock", "pop", "jazz", "classical", "hiphop", "metal", "indie",
+            "rnb", "country", "electronic", "folk", "blues", "reggae", "punk",
+            "soul", "alternative", "techno", "disco", "ambient", "baroque",
+            "bossa-nova", "celtic", "choral", "dancehall", "drum-and-bass",
+            "dubstep", "flamenco", "funk", "garage", "gospel", "grunge",
+            "grime", "house", "k-pop", "latin", "lo-fi", "motown", "opera",
+            "orchestral", "post-rock", "psych-rock", "rap", "salsa", "ska",
+            "swing", "trance", "trip-hop", "world-music", "afrobeats",
+            "bluegrass", "bolero", "cumbia", "fado", "hardstyle", "merengue",
+            "neo-soul", "new-wave", "noise", "prog-rock", "shoegaze", "synth-pop"
+        ],
+        "education": [
+            "engineering", "medicine", "law", "art", "science", "business",
+            "history", "psychology", "mathematics", "philosophy", "literature",
+            "economics", "architecture", "computing", "biology", "chemistry",
+            "physics", "geography", "sociology", "anthropology", "archaeology",
+            "astronomy", "biochemistry", "criminology", "dentistry", "design",
+            "drama", "education", "environmental-science", "finance", "genetics",
+            "geology", "graphic-design", "international-relations", "journalism",
+            "linguistics", "marketing", "mechanical-engineering", "microbiology",
+            "music", "neuroscience", "nursing", "nutrition", "optometry",
+            "pharmacy", "photography", "political-science", "public-health",
+            "robotics", "social-work", "software-engineering", "statistics",
+            "theology", "urban-planning", "veterinary", "zoology"
+        ],
+        "politics": [
+            "left", "centre", "right", "green", "liberal", "conservative",
+            "socialist", "libertarian", "progressive", "moderate", "anarchist",
+            "centrist", "communist", "democrat", "environmentalist", "feminist",
+            "nationalist", "pacifist", "republican", "social-democrat",
+            "traditionalist", "utilitarian", "reformist", "populist"
+        ],
+        "languages": [
+            "english", "spanish", "french", "german", "mandarin", "arabic",
+            "portuguese", "italian", "japanese", "hindi", "russian", "korean",
+            "afrikaans", "albanian", "amharic", "armenian", "azerbaijani",
+            "basque", "bengali", "bosnian", "bulgarian", "catalan", "croatian",
+            "czech", "danish", "dutch", "estonian", "farsi", "finnish",
+            "georgian", "greek", "gujarati", "hausa", "hebrew", "hungarian",
+            "icelandic", "indonesian", "irish", "kannada", "kazakh", "latvian",
+            "lithuanian", "macedonian", "malay", "maltese", "marathi", "mongolian",
+            "nepali", "norwegian", "pashto", "polish", "punjabi", "romanian",
+            "serbian", "sinhalese", "slovak", "slovenian", "somali", "swahili",
+            "swedish", "tagalog", "tamil", "telugu", "thai", "turkish",
+            "ukrainian", "urdu", "uzbek", "vietnamese", "welsh", "yoruba", "zulu"
+        ],
+        "religion": [
+            "christian", "muslim", "jewish", "hindu", "buddhist", "atheist",
+            "agnostic", "spiritual", "sikh", "secular", "bahai", "cao-dai",
+            "confucian", "druid", "gnostic", "jain", "pagan", "rastafari",
+            "shinto", "taoist", "unitarian", "wiccan", "zoroastrian",
+            "non-religious", "humanist", "animist", "indigenous-spirituality"
+        ]
     }
 
     users_to_insert = []
     messages_to_insert = []
 
-    for i in range(100):
+    for i in range(1000):
         all_pairs = [(cat, val) for cat, vals in keyword_pools.items() for val in vals]
-        picked = random.sample(all_pairs, 20)
+        picked = random.sample(all_pairs, 50)
         keyword_str = ",".join(f"{cat}:{val}" for cat, val in picked)
 
         first = random.choice(first_names)
@@ -317,7 +428,7 @@ def add_fake_users():
             "email": email,
             "password": generate_password_hash("Test123!"),
             "name": f"{first} {last}",
-            "phone": "07" + "".join([str(random.randint(0,9)) for _ in range(9)]),
+            "phone": "07" + "".join([str(random.randint(0, 9)) for _ in range(9)]),
             "age": random.randint(18, 45),
             "gender": random.choice(genders),
             "location": random.choice(locations),
@@ -332,7 +443,7 @@ def add_fake_users():
     db.users.insert_many(users_to_insert)
     db.messages.insert_many(messages_to_insert)
 
-    return "Created 100 users successfully."
+    return "Created 1000 users successfully."
 
 from threading import Thread
 
