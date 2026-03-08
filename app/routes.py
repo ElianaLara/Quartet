@@ -1,4 +1,6 @@
 from flask import render_template, redirect, url_for, session, Blueprint, flash, request, current_app
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from .forms import LoginForm, RegisterForm, ProfileForm
 from Chatbot import intro, send_answer, extract_keywords
 
@@ -20,7 +22,7 @@ def login():
 
         if user:
             # NOTE: For production, hash passwords instead of plaintext
-            if user['password'] == form.password.data:
+            if check_password_hash(user["password"], form.password.data):
                 # Login successful
                 session['user_email'] = user['email']
                 session['user_name'] = user.get('name', user['email'])
@@ -108,7 +110,7 @@ def register():
 
         user_data = {
             "email": form.email.data,
-            "password": form.password.data,
+            "password": generate_password_hash(form.password.data),
             "phone": form.phone.data,
             "age": form.age.data,
             "gender": form.gender.data,
@@ -155,7 +157,7 @@ def send_message():
 
     # Store the message and keywords in the database
     message_record = {
-        "user_name": user_name,
+        "user_email": session.get("user_email"),  # was user_name
         "keywords": keywords
     }
     db.messages.insert_one(message_record)

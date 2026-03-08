@@ -2,9 +2,6 @@
 from flask import current_app, session
 import pymongo
 
-from app.routes import my_keywords
-
-
 def calculate_bucket(): #pass in the user?
     db = current_app.db
     bucket_table = db["bucket"] #inside "" put name of bucket table
@@ -114,13 +111,19 @@ def calculate_match_score(data_str_one, data_str_two, ID_1, ID_2):
 
 def make_keywords_dictionary(data_str):
     result = {}
-    parts = data_str.split(",")
-    for part in parts:
-        key, value = part.split(":")
-        if key in result:
-            result[key].append(value)
-        else:
-            result[key] = [value]
+    if not data_str or data_str.strip() == "0":
+        return result
+    for part in data_str.split(","):
+        if ":" not in part:
+            continue  # skip malformed entries
+        key, value = part.split(":", 1)
+        key = key.strip()
+        value = value.strip()
+        if key and value:
+            if key in result:
+                result[key].append(value)
+            else:
+                result[key] = [value]
     return result
 
 from flask import current_app
@@ -154,33 +157,35 @@ def get_user_keywords(user_id):
     user = db.users.find_one({"_id": user_id})
     if not user:
         return []
-    messages = db.messages.find({"user_name": user.get("name")})
+    messages = db.messages.find({"user_email": user.get("email")})  # was user_name
     return [msg["keywords"] for msg in messages if msg.get("keywords")]
 
 
 def findBest(other_id):
     db = current_app.db
     my_id = get_id_from_email(session.get("user_email"))
-    my_keywords = get_user_keywords(my_id)
+    my_keywords = ",".join(get_user_keywords(my_id))
 
-    # fetch full document so we can access buddies
     other_user = db.users.find_one({"_id": other_id})
     if not other_user:
         return other_id
 
-    other_keywords = get_user_keywords(other_id)
+    # if they have no buddies yet, just score them directly and return
+    if not other_user.get("buddies"):
+        return other_id
+
+    other_keywords = ",".join(get_user_keywords(other_id))
     _, __, best_score = calculate_match_score(my_keywords, other_keywords, my_id, other_id)
     best_id = other_id
 
-    # check each of otherUser's buddies
     for key, buddy_id in other_user.get("buddies", {}).items():
-        buddy_keywords = get_user_keywords(buddy_id)
+        buddy_keywords = ",".join(get_user_keywords(buddy_id))
         _, __, score = calculate_match_score(my_keywords, buddy_keywords, my_id, buddy_id)
         if score > best_score:
             best_score = score
             best_id = buddy_id
 
-    return best_id  # returns the ID of whoever scored highest
+    return best_id
 
 def get_id_from_email(email):
     db = current_app.db
