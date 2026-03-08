@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, TextAreaField, SubmitField, IntegerField, EmailField, PasswordField, DateField, TimeField
-from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError
+from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError, NumberRange
 import re
 
 
@@ -29,7 +29,7 @@ class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired("Email is required"), Email("Incorrect Format")])
     password = PasswordField('Password', validators=[DataRequired("Password if required"), Length(min=6, message="Password must be over 6 in length"), validate_password])
     phone = StringField('Phone', validators=[DataRequired(), Length(min=11, max=11, message="Phone number must be 11 digits (07)"), validate_phonenumber])
-    age = IntegerField('Age', validators=[DataRequired(), Length(min=18, message="Under 18s not allowed")])
+    age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, message="Under 18s not allowed")])
     gender = SelectField("Gender", choices=[("Male", "Male"), ("Female", "Female"), ("Other", "Other")])
     location = StringField('location', validators=[DataRequired()])
 
@@ -40,7 +40,7 @@ class ProfileForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[Optional(), Length(min=6)])
     phone = StringField("Phone", validators=[Optional(), Length(min=11, max=11, message="Phone number must be 11 digits (07)"), validate_phonenumber])
-    age = IntegerField("Age", validators=[Optional(), Length(min=18, message="Under 18s not allowed")])
+    age = IntegerField("Age", validators=[Optional(), NumberRange(min=18, message="Under 18s not allowed")])
     gender = SelectField("Gender", choices=[("Male", "Male"), ("Female", "Female"), ("Other", "Other")])
     non_negotiables = TextAreaField("Non-Negotiables / Black List", validators=[Optional(), Length(max=500), sanitise_blacklist])
     submit = SubmitField("Update Profile")

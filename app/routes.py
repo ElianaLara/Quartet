@@ -167,13 +167,6 @@ def get_messages():
     return {"messages": chat_messages}
 
 
-def add_terminal_message(msg):
-    """Simulate another user sending a message from the terminal"""
-    chat_messages.append({
-        "sender": "Genna",  # or any name you want
-        "text": msg
-    })
-
 @main.route("/logout", methods=["GET", "POST"])
 def logout():
     session.pop("user_email", None)
