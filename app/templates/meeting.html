@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Meeting</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(#f7faff, #eefeff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 450px;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      color: #254465;
+    }
+    .info-card {
+      background: #f5f8ff;
+      padding: 16px;
+      border-radius: 12px;
+      width: 100%;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      text-align: left;
+    }
+    .label {
+      font-weight: 600;
+      color: #254465;
+      margin-bottom: 4px;
+    }
+    .value {
+      font-size: 1rem;
+      color: #000;
+    }
+    .button {
+      width: 100%;
+      padding: 14px;
+      background-color: #0076e2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .button:hover {
+      background-color: #005bb5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Meeting Details</h1>
+
+  <div class="info-card">
+    <div class="label">Place</div>
+    <div class="value">{{ meeting.place }}</div>
+  </div>
+
+  <div class="info-card">
+    <div class="label">Time</div>
+    <div class="value">{{ meeting.time }}</div>
+  </div>
+
+  <a href="{{ url_for('main.dashboard') }}" class="button">← Back to Dashboard</a>
+</div>
+
+</body>
+</html>
