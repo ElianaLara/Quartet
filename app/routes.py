@@ -82,7 +82,8 @@ def profile():
         age=user.get("age", ""),
         gender=user.get("gender", ""),
         location=user.get("location", ""),
-        non_negotiables=user.get("non_negotiables", "")
+        non_negotiables=user.get("non_negotiables", ""),
+        availability = user.get("availability", "")
     )
 
     if form.validate_on_submit():
@@ -93,7 +94,8 @@ def profile():
             "age": form.age.data,
             "gender": form.gender.data,
             "non_negotiables": form.non_negotiables.data,
-            "location": form.location.data
+            "location": form.location.data,
+            "availability": form.availability.data
         }
 
         # Update password if provided
