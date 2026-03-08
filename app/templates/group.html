@@ -63,7 +63,11 @@
     <div class="no-members">No matches found yet. Try chatting with Jenna more!</div>
   {% endif %}
 
-  <a href="{{ url_for('main.dashboard') }}" class="back-btn">← Back to Dashboard</a>
+   <a href="{{ url_for('main.place', group_id=group_id) }}" class="back-btn">
+    SEE WHERE ARE YOU GOING TO MEET OMG
+   </a>
+
+  <a href="{{ url_for('main.dashboard') }}">← Back to Dashboard</a>
 </div>
 </body>
 </html>
