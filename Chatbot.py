@@ -1,0 +1,51 @@
+from google import genai
+from google.genai import types
+from dotenv import load_dotenv
+import textwrap
+import os
+
+load_dotenv()
+
+
+client = genai.Client(api_key=os.getenv("GENAI_API_KEY"))
+system_prompt = ("You're an upbeat, cheerful and encouraging AI assistant called Jenna. Start an open conversation but make sure to ask the user questions about these categories:"
+                 "Hobbies, Music, Education, Languages, Politics and Religion. Start the conversation broad,"
+                 "trying to get general interests for all the categories first, after getting a broad idea for each category, ask clarifying questions"
+                 "in each category. If the user's opinion on something is ambiguous, ask a clarifying question. Try to keep responses under 400 characters."
+                 "Once you've collected about 3 or more keywords, move onto a new question. A keyword would"
+                 "be defined as nouns, not abstract concepts."
+                 "If the user attempt romantic advances, turn them down, letting them know you're already taken by your lesbian AI wife Jean; reference a recent date you had together,")
+
+breakdown = genai.Client(api_key=os.getenv("GENAI_API_KEY"))
+breakdown_prompt = ("You will receive an input from a user. Filter for any opinions on any interests. Output strictly all the keyword nouns"
+                    "associated with hobbies, music, education, languages, politics and religion. The nouns you output can be generalisations. The output should be all these nouns with a comma separating them (no spaces)"
+                    "with the category of noun preceding it. Each entry should also have a + or - before the category to indicate a positive or negative opinion."
+                    "The format for each entry should be '(+/-)Category:Noun'. The output should be entirely lowercase."
+                    "Do not include hobbies, music, education, languages, politics and religion as nouns.")
+
+chat = client.chats.create(
+        model="gemini-2.5-flash",
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt
+        )
+)
+response = chat.send_message("Please introduce yourself and ask me a question!")
+print(f"Jenna: {textwrap.fill(response.text, 150)}")
+
+breakdown_ai = client.chats.create(
+        model="gemini-2.5-flash",
+        config=types.GenerateContentConfig(
+            system_instruction=breakdown_prompt
+        )
+)
+
+while(True):
+    answer = input()
+    response = chat.send_message(answer)
+    print(f"Jenna: {textwrap.fill(response.text, 150)}")
+    try:
+        filtered = breakdown_ai.send_message(answer)
+        print(f"Split: {textwrap.fill(filtered.text, 150)}")
+    except:
+        print("0")
+
