@@ -122,7 +122,7 @@
 
   <!-- Actions column: Plus, Message, Profile -->
   <div class="actions">
-    <div class="button-icon" title="Add">+</div>
+    <a class="button-icon" title="Add" href="{{ url_for('main.my_keywords') }}">+</a>
     <div class="button-icon" title="Messages">
       <a href="{{ url_for('main.chat') }}">
       <img src="{{ url_for('static', filename='images/message.png') }}"
