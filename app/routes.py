@@ -4,6 +4,7 @@ from group_formation import form_and_save_group, get_group_members
 from .forms import LoginForm, RegisterForm, ProfileForm
 from Chatbot import intro, send_answer, extract_keywords
 from matching import calculate_match_score, get_user_keywords, get_id_from_email, search, findBest_for_user
+from threading import Thread
 
 main = Blueprint("main", __name__)
 
@@ -229,49 +230,6 @@ def my_keywords():
     # Option 2: Show in browser (simple HTML page)
     return render_template("plus.html", keywords=keywords_list, user_name=user_name)
 
-@main.route("/run_search")
-def run_search():
-    if "user_email" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("main.login"))
-
-    search()
-    flash("Buddies updated!", "success")
-    return redirect(url_for("main.dashboard"))
-
-@main.route("/find_group")
-def find_group():
-    if "user_email" not in session:
-        flash("Please log in first.", "error")
-        return redirect(url_for("main.login"))
-
-    group_id = form_and_save_group()
-    if not group_id:
-        flash("Couldn't form a group — chat with Jenna first!", "error")
-        return redirect(url_for("main.dashboard"))
-
-    members = get_group_members(group_id)
-    my_id = get_id_from_email(session.get("user_email"))
-    my_keywords = ",".join(get_user_keywords(my_id))
-
-    member_data = []
-    for member in members:
-        if member["_id"] == my_id:
-            continue
-        other_keywords = ",".join(get_user_keywords(member["_id"]))
-        _, __, score = calculate_match_score(my_keywords, other_keywords, my_id, member["_id"])
-        member_data.append({
-            "id": str(member["_id"]),
-            "name": member.get("name", "Unknown"),
-            "age": member.get("age", "?"),
-            "gender": member.get("gender", "?"),
-            "location": member.get("location", "?"),
-            "score": score,
-            "keyword_list": parse_keyword_list(other_keywords)
-        })
-
-    return render_template("group.html", members=member_data)
-
 def parse_keyword_list(keyword_str):
     result = []
     if not keyword_str or keyword_str.strip() == "0":
@@ -288,6 +246,12 @@ import random
 @main.route("/add-fake-users")
 def add_fake_users():
     db = current_app.db
+
+    availability_slots = [
+        "wed_morning", "wed_afternoon", "wed_evening",
+        "sat_morning", "sat_afternoon", "sat_evening",
+        "sun_morning", "sun_afternoon", "sun_evening",
+    ]
 
     first_names = [
         "Alice", "Bob", "Charlie", "Diana", "Ethan", "Fiona", "George", "Hannah",
@@ -434,7 +398,11 @@ def add_fake_users():
             "age": random.randint(18, 45),
             "gender": random.choice(genders),
             "location": random.choice(locations),
-            "non_negotiables": ""
+            "non_negotiables": "",
+            "availability": random.sample(
+                availability_slots,
+                k=random.randint(1, len(availability_slots))  # 1 to 9 random slots
+            )
         })
 
         messages_to_insert.append({
@@ -447,32 +415,23 @@ def add_fake_users():
 
     return "Created 1000 users successfully."
 
-from threading import Thread
-
 def run_search_for_all_users(app):
     with app.app_context():
         db = app.db
         print("Loading all users into memory...")
 
-        # load everything upfront — one DB call each
         all_users = {str(u["_id"]): u for u in db.users.find()}
         all_messages = list(db.messages.find())
 
-        # build keyword lookup: {email: "hobbies:hiking,music:rock,..."}
+        # build keyword lookup
         keyword_map = {}
         for msg in all_messages:
             email = msg.get("user_email")
             kw = msg.get("keywords", "0")
             if email and kw and kw != "0":
-                if email not in keyword_map:
-                    keyword_map[email] = []
-                keyword_map[email].append(kw)
+                keyword_map.setdefault(email, []).append(kw)
 
-        # flatten to single string per email
-        keyword_strings = {
-            email: ",".join(kws)
-            for email, kws in keyword_map.items()
-        }
+        keyword_strings = {email: ",".join(kws) for email, kws in keyword_map.items()}
 
         user_list = list(all_users.values())
         total = len(user_list)
@@ -482,38 +441,51 @@ def run_search_for_all_users(app):
 
         for i, user in enumerate(user_list):
             try:
-                my_id_str = str(user["_id"])
+                my_id = user["_id"]
+                my_id_str = str(my_id)
                 my_email = user.get("email", "")
                 my_keywords = keyword_strings.get(my_email, "")
 
                 buddy_dict = {}
 
-                for j in range(3):  # 3 buddies
-                    # pick a random starting user
-                    best_user = random.choice(user_list)
+                for j in range(3):
+                    # pick random starting user that isn't me
+                    candidates_pool = [u for u in user_list if str(u["_id"]) != my_id_str]
+                    if not candidates_pool:
+                        break
+
+                    best_user = random.choice(candidates_pool)
                     best_id_str = str(best_user["_id"])
 
-                    for k in range(4):  # 4 steps
+                    # score the starting user
+                    start_keywords = keyword_strings.get(best_user.get("email", ""), "")
+                    _, __, best_score = calculate_match_score(
+                        my_keywords, start_keywords, my_id, best_user["_id"]
+                    )
+
+                    for k in range(4):
                         current_user = all_users.get(best_id_str)
                         if not current_user:
                             break
 
-                        buddies_of_current = current_user.get("buddies", {})
-                        candidates = [best_id_str] + list(buddies_of_current.values())
+                        # check current user and all their buddies
+                        candidates = [best_id_str] + list(current_user.get("buddies", {}).values())
 
-                        best_score = -1
                         for candidate_id_str in candidates:
-                            candidate = all_users.get(candidate_id_str)
-                            if not candidate or candidate_id_str == my_id_str:
+                            if candidate_id_str == my_id_str:
                                 continue
-                            candidate_email = candidate.get("email", "")
-                            candidate_keywords = keyword_strings.get(candidate_email, "")
+                            candidate = all_users.get(candidate_id_str)
+                            if not candidate:
+                                continue
 
-                            from matching import calculate_match_score
+                            candidate_keywords = keyword_strings.get(candidate.get("email", ""), "")
+
+                            # use calculate_match_score for every comparison
                             _, __, score = calculate_match_score(
                                 my_keywords, candidate_keywords,
-                                user["_id"], candidate["_id"]
+                                my_id, candidate["_id"]
                             )
+
                             if score > best_score:
                                 best_score = score
                                 best_id_str = candidate_id_str
@@ -521,17 +493,17 @@ def run_search_for_all_users(app):
                     buddy_dict[str(j)] = best_id_str
 
                 updates.append({
-                    "filter": {"_id": user["_id"]},
+                    "filter": {"_id": my_id},
                     "update": {"$set": {"buddies": buddy_dict}}
                 })
 
-                if (i + 1) % 10 == 0:
+                if (i + 1) % 50 == 0:
                     print(f"[{i+1}/{total}] Processed...")
 
             except Exception as e:
                 print(f"Failed for {user.get('email')}: {e}")
 
-        # write all updates to DB in one bulk operation
+        # write all updates in one bulk operation
         print("Writing to database...")
         from pymongo import UpdateOne
         if updates:
@@ -541,9 +513,225 @@ def run_search_for_all_users(app):
 
         print(f"All done. {len(updates)} users updated.")
 
+def run_search_for_current_user():
+    """Runs search for the current session user. Call this anywhere."""
+    db = current_app.db
+    user_email = session.get("user_email")
+
+    me = db.users.find_one({"email": user_email})
+    if not me:
+        return
+
+    my_id = me["_id"]
+    my_id_str = str(my_id)
+
+    other_users = {str(u["_id"]): u for u in db.users.find({"email": {"$ne": user_email}})}
+
+    all_messages = list(db.messages.find())
+    keyword_map = {}
+    for msg in all_messages:
+        email = msg.get("user_email")
+        kw = msg.get("keywords", "0")
+        if email and kw and kw != "0":
+            keyword_map.setdefault(email, []).append(kw)
+
+    keyword_strings = {email: ",".join(kws) for email, kws in keyword_map.items()}
+    my_keywords = keyword_strings.get(user_email, "")
+    user_list = list(other_users.values())
+
+    buddy_dict = {}
+
+    for j in range(3):
+        best_user = random.choice(user_list)
+        best_id_str = str(best_user["_id"])
+
+        start_keywords = keyword_strings.get(best_user.get("email", ""), "")
+        _, __, best_score = calculate_match_score(
+            my_keywords, start_keywords, my_id, best_user["_id"]
+        )
+
+        for k in range(4):
+            current_user = other_users.get(best_id_str)
+            if not current_user:
+                break
+
+            candidates = [best_id_str] + list(current_user.get("buddies", {}).values())
+
+            for candidate_id_str in candidates:
+                if candidate_id_str == my_id_str:
+                    continue
+                candidate = other_users.get(candidate_id_str)
+                if not candidate:
+                    continue
+
+                candidate_keywords = keyword_strings.get(candidate.get("email", ""), "")
+                _, __, score = calculate_match_score(
+                    my_keywords, candidate_keywords,
+                    my_id, candidate["_id"]
+                )
+
+                if score > best_score:
+                    best_score = score
+                    best_id_str = candidate_id_str
+
+        buddy_dict[str(j)] = best_id_str
+        print(f"Buddy {j}: {other_users[best_id_str].get('email')} (score: {best_score})")
+
+    db.users.update_one(
+        {"_id": my_id},
+        {"$set": {"buddies": buddy_dict}}
+    )
+    print(f"Search complete for {user_email}")
+
+@main.route("/run_search")
+def run_search():
+    if "user_email" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("main.login"))
+    try:
+        run_search_for_current_user()
+        flash("Buddies updated!", "success")
+    except Exception as e:
+        print(f"Search failed: {e}")
+        flash("Search failed — please try again.", "error")
+    return redirect(url_for("main.dashboard"))
+
+
+@main.route("/find_group")
+def find_group():
+    if "user_email" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("main.login"))
+
+    # run search first to get fresh buddies before forming group
+    try:
+        run_search_for_current_user()
+    except Exception as e:
+        print(f"Search failed before group formation: {e}")
+
+    group_id = form_and_save_group()
+    if not group_id:
+        flash("Couldn't form a group — chat with Jenna first!", "error")
+        return redirect(url_for("main.dashboard"))
+
+    members = get_group_members(group_id)
+    my_id = get_id_from_email(session.get("user_email"))
+    my_keywords = ",".join(get_user_keywords(my_id))
+
+    member_data = []
+    for member in members:
+        if member["_id"] == my_id:
+            continue
+        other_keywords = ",".join(get_user_keywords(member["_id"]))
+        _, __, score = calculate_match_score(my_keywords, other_keywords, my_id, member["_id"])
+        member_data.append({
+            "id": str(member["_id"]),
+            "name": member.get("name", "Unknown"),
+            "age": member.get("age", "?"),
+            "gender": member.get("gender", "?"),
+            "location": member.get("location", "?"),
+            "score": score,
+            "keyword_list": parse_keyword_list(other_keywords)
+        })
+
+    return render_template("group.html", members=member_data)
+
+# background worker — no route decorator
+def run_search_for_all_users_worker(app):
+    with app.app_context():
+        db = app.db
+        print("Loading all users into memory...")
+
+        all_users = {str(u["_id"]): u for u in db.users.find()}
+        all_messages = list(db.messages.find())
+
+        keyword_map = {}
+        for msg in all_messages:
+            email = msg.get("user_email")
+            kw = msg.get("keywords", "0")
+            if email and kw and kw != "0":
+                keyword_map.setdefault(email, []).append(kw)
+
+        keyword_strings = {email: ",".join(kws) for email, kws in keyword_map.items()}
+
+        user_list = list(all_users.values())
+        total = len(user_list)
+        print(f"Processing {total} users...")
+
+        updates = []
+
+        for i, user in enumerate(user_list):
+            try:
+                my_id = user["_id"]
+                my_id_str = str(my_id)
+                my_email = user.get("email", "")
+                my_keywords = keyword_strings.get(my_email, "")
+
+                buddy_dict = {}
+
+                for j in range(3):
+                    candidates_pool = [u for u in user_list if str(u["_id"]) != my_id_str]
+                    if not candidates_pool:
+                        break
+
+                    best_user = random.choice(candidates_pool)
+                    best_id_str = str(best_user["_id"])
+
+                    start_keywords = keyword_strings.get(best_user.get("email", ""), "")
+                    _, __, best_score = calculate_match_score(
+                        my_keywords, start_keywords, my_id, best_user["_id"]
+                    )
+
+                    for k in range(4):
+                        current_user = all_users.get(best_id_str)
+                        if not current_user:
+                            break
+
+                        candidates = [best_id_str] + list(current_user.get("buddies", {}).values())
+
+                        for candidate_id_str in candidates:
+                            if candidate_id_str == my_id_str:
+                                continue
+                            candidate = all_users.get(candidate_id_str)
+                            if not candidate:
+                                continue
+
+                            candidate_keywords = keyword_strings.get(candidate.get("email", ""), "")
+                            _, __, score = calculate_match_score(
+                                my_keywords, candidate_keywords,
+                                my_id, candidate["_id"]
+                            )
+
+                            if score > best_score:
+                                best_score = score
+                                best_id_str = candidate_id_str
+
+                    buddy_dict[str(j)] = best_id_str
+
+                updates.append({
+                    "filter": {"_id": my_id},
+                    "update": {"$set": {"buddies": buddy_dict}}
+                })
+
+                if (i + 1) % 50 == 0:
+                    print(f"[{i+1}/{total}] Processed...")
+
+            except Exception as e:
+                print(f"Failed for {user.get('email')}: {e}")
+
+        print("Writing to database...")
+        from pymongo import UpdateOne
+        if updates:
+            db.users.bulk_write([
+                UpdateOne(u["filter"], u["update"]) for u in updates
+            ])
+        print(f"All done. {len(updates)} users updated.")
+
+
+# route that triggers the worker
 @main.route("/run-search-all")
 def run_search_all():
     app = current_app._get_current_object()
-    thread = Thread(target=run_search_for_all_users, args=(app,))
+    thread = Thread(target=run_search_for_all_users_worker, args=(app,))
     thread.start()
     return "Search started in background — check your terminal for progress."
