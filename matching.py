@@ -42,23 +42,23 @@ def match_group(): #maybe pass what bucket you want to match in
     non_negotiable_table = db["non_negotiable"] #inside "" put name of group table
     group_table = db["group"] #inside "" put name of group table
 
-    #group_list = []
-    #finished = False
+    new_group_list = []
+    finished = False
 
-    #user = pick a random user from the bucket
-    #group_list.append(user)
+    user = "" #pick a random user from the bucket !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    new_group_list.append(user)
 
-    #while not finished:
-        #add_to_group = True
-        #temp_user = pick a random user who is in the bucket specified
+    while not finished:
+        add_to_group = True
+        temp_user = "" #pick a random user who is in the bucket specified !!!!!!!!!!!!!!!!!!!!!!!1!!!
 
-        #for user in group_list:
+        #for user in new_group_list:
             #if temp_user has a characteristic that is in user non negotiables table:
                 # add_to_group = False
         #if add_to_group:
-            #group_list.append(temp_user)
+            #new_group_list.append(temp_user)
 
-        #if len(group_list) == 4:
-            #finished = True
+        if len(new_group_list) == 4:
+            finished = True
 
     #group_table.insert_one(db) #write group to the database (table of groups) #mightb need it in a for loop
