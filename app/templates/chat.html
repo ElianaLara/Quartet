@@ -71,6 +71,10 @@ input[type="text"]:focus { outline: none; border-color: #254465; }
         const msgs = data.messages;
 
         for (let i = lastMessageCount; i < msgs.length; i++) {
+            if (msgs[i].hidden) {          // skip hidden messages
+                lastMessageCount++;
+                continue;
+            }
             addMessageToBox(msgs[i].text, msgs[i].sender);
         }
         lastMessageCount = msgs.length;
