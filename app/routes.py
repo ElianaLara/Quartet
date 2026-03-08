@@ -179,3 +179,30 @@ def logout():
     session.pop("user_name", None)
     flash("You have been logged out.", "success")
     return redirect(url_for("main.login"))
+
+
+@main.route("/my_keywords")
+def my_keywords():
+    db = current_app.db
+    user_name = session.get("user_name")
+
+    if not user_name:
+        flash("Please log in first to see your keywords.", "error")
+        return redirect(url_for("main.login"))
+
+    # Fetch all messages for this user
+    messages = db.messages.find({"user_name": user_name})
+    keywords_list = []
+
+    for msg in messages:
+        kw = msg.get("keywords")
+        if kw:
+            keywords_list.append(kw)
+
+    if not keywords_list:
+        flash("No keywords found for you yet.", "info")
+        keywords_list = []
+
+
+    # Option 2: Show in browser (simple HTML page)
+    return render_template("plus.html", keywords=keywords_list, user_name=user_name)
